@@ -62,3 +62,45 @@ const sortSchema = z
   .transform((fields) => fields?.replace(/,/g, " "));
 
 ProductsQuerySchema.shape.query.shape.sort = sortSchema;
+
+const numericOperators = ["<", ">", "<=", ">=", "="];
+const numericOperatorsStingUnion = numericOperators.join("|");
+const dbNumericOperators = ["$lt", "$gt", "$lte", "$gte", "$eq"];
+
+const createNumericFieldSchema = (fieldName) => {
+  const fieldSchema = z
+    .string()
+    .optional()
+    .refine(
+      (value) => {
+        if (!value) {
+          return true;
+        }
+        const valueRegex = new RegExp(
+          `^(${numericOperatorsStingUnion})\\d+\(,(${numericOperatorsStingUnion})\\d+)*$`
+        );
+        return valueRegex.test(value);
+      },
+      {
+        message: `Invalid ${fieldName} range provided. Expected format: <100,>100,=100,<=100,>=100`,
+      }
+    )
+    .transform((value) => {
+      if (!value) {
+        return {};
+      }
+      const filters = value.split(",").reduce((acc, filter) => {
+        const operator = filter.match(/[^0-9]+/g)[0];
+        const value = parseInt(filter.match(/[0-9]+/g)[0]);
+        const operatorIndex = numericOperators.indexOf(operator);
+        const dbOperator = dbNumericOperators[operatorIndex];
+        return { ...acc, [dbOperator]: value };
+      }, {});
+      return filters;
+    });
+
+  ProductsQuerySchema.shape.query.shape[fieldName] = fieldSchema;
+};
+
+createNumericFieldSchema("price");
+createNumericFieldSchema("rating");

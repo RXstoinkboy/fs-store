@@ -1,7 +1,7 @@
 import { Product } from "./model.js";
 
 export const getProducts = async (req, res) => {
-  const { name, company, featured, fields, sort } = req.query;
+  const { name, company, featured, fields, sort, price, rating } = req.query;
 
   const queryParams = {};
 
@@ -17,6 +17,14 @@ export const getProducts = async (req, res) => {
     queryParams.featured = featured;
   }
 
+  if (price) {
+    queryParams.price = price;
+  }
+
+  if (rating) {
+    queryParams.rating = rating;
+  }
+
   const productsQuery = Product.find(queryParams);
 
   if (fields) {
@@ -24,7 +32,7 @@ export const getProducts = async (req, res) => {
   }
 
   if (sort) {
-    productsQuery.sort(sort)
+    productsQuery.sort(sort);
   }
 
   const products = await productsQuery;
