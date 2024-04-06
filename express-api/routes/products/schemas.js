@@ -1,41 +1,64 @@
 import z from "zod";
 
 export const ProductsQuerySchema = z.object({
-  //   query: z.object({
-  //     name: z.string().optional(),
-  //     price: z.number().optional(),
-  //     featured: z.boolean().optional(),
-  //     rating: z.number().optional(),
-  //     company: z.string().optional(),
-  //     createdAt: z.date().optional(),
-  //   }).strict(),
   query: z
     .object({
       name: z.string(),
       price: z.number(),
-      featured: z.boolean(),
+      featured: z.coerce.boolean(),
       rating: z.number(),
       company: z.string(),
       createdAt: z.date(),
     })
     .partial()
-    .passthrough(),
+    .strict(),
 });
 
 const knownKeys = Object.keys(ProductsQuerySchema.shape.query.shape);
+const knownKeysStringUnion = knownKeys.join("|");
 
-ProductsQuerySchema.shape.query = ProductsQuerySchema.shape.query.refine(
-  (value) => {
-    const keys = Object.keys(value);
-    for (let key of keys) {
-      if (!knownKeys.includes(key)) {
-        return false;
+const fieldsSchema = z
+  .string()
+  .optional()
+  .refine(
+    (fields) => {
+      if (!fields) {
+        return true;
       }
-    }
-    return true;
-  },
-  {
-    message: "Unknown property provided in query",
-    path: ["query"],
-  }
-);
+      const fieldsRegex = new RegExp(
+        `^(${knownKeysStringUnion})(,(${knownKeysStringUnion}))*$`
+      );
+      return fieldsRegex.test(fields);
+    },
+    (fields) => ({
+      message: `Unknown field provided in "fields". Provided: ${fields}. Expected one of: ${knownKeys.join(
+        ","
+      )}`,
+    })
+  )
+  .transform((fields) => fields?.replace(/,/g, " "));
+
+ProductsQuerySchema.shape.query.shape.fields = fieldsSchema;
+
+const sortSchema = z
+  .string()
+  .optional()
+  .refine(
+    (fields) => {
+      if (!fields) {
+        return true;
+      }
+      const sortRegex = new RegExp(
+        `^(-?(${knownKeysStringUnion}))(,(-?(${knownKeysStringUnion})))*$`
+      );
+      return sortRegex.test(fields);
+    },
+    (fields) => ({
+      message: `Unknown field provided in "sort". Provided: ${fields}. Can be sorted by: ${knownKeys.join(
+        ","
+      )}`,
+    })
+  )
+  .transform((fields) => fields?.replace(/,/g, " "));
+
+ProductsQuerySchema.shape.query.shape.sort = sortSchema;

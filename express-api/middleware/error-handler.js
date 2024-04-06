@@ -2,6 +2,7 @@ import { CustomApiError } from "../errors/custom-api-error.js";
 import mongoose from "mongoose";
 
 export const errorHandlerMiddleware = (err, req, res, next) => {
+  console.log('error' ,err)
   if (err instanceof CustomApiError) {
     return res.status(err.statusCode).json({ message: err.message });
   }
