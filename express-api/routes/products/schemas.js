@@ -9,6 +9,11 @@ export const ProductsQuerySchema = z.object({
       rating: z.number(),
       company: z.string(),
       createdAt: z.date(),
+      // fields with additional logic below:
+      // fields
+      // sort
+      // price
+      // rating
     })
     .partial()
     .strict(),
