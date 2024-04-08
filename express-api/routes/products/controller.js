@@ -25,7 +25,12 @@ export const getProducts = async (req, res) => {
     queryParams.rating = rating;
   }
 
-  const productsQuery = Product.find(queryParams);
+  const page = req.query.page ?? 1;
+  const limit = req.query.limit ?? 10;
+
+  const productsQuery = Product.find(queryParams)
+    .limit(limit)
+    .skip((page - 1) * limit);
 
   if (fields) {
     productsQuery.select(fields);
@@ -35,7 +40,11 @@ export const getProducts = async (req, res) => {
     productsQuery.sort(sort);
   }
 
-  const products = await productsQuery;
+  const [products, totalFiltered, total] = await Promise.all([
+    productsQuery,
+    Product.countDocuments(queryParams),
+    Product.estimatedDocumentCount(),
+  ]);
 
-  res.status(200).json(products);
+  res.status(200).json({ results: products, total, totalFiltered });
 };

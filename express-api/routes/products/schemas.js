@@ -6,9 +6,10 @@ export const ProductsQuerySchema = z.object({
       name: z.string(),
       price: z.number(),
       featured: z.coerce.boolean(),
-      rating: z.number(),
       company: z.string(),
       createdAt: z.date(),
+      page: z.coerce.number().min(1),
+      limit: z.coerce.number().min(1)
       // fields with additional logic below:
       // fields
       // sort
@@ -92,8 +93,9 @@ const createNumericFieldSchema = (fieldName) => {
     )
     .transform((value) => {
       if (!value) {
-        return {};
+        return undefined;
       }
+      
       const filters = value.split(",").reduce((acc, filter) => {
         const operator = filter.match(/[^0-9]+/g)[0];
         const value = parseInt(filter.match(/[0-9]+/g)[0]);
@@ -101,6 +103,7 @@ const createNumericFieldSchema = (fieldName) => {
         const dbOperator = dbNumericOperators[operatorIndex];
         return { ...acc, [dbOperator]: value };
       }, {});
+
       return filters;
     });
 
