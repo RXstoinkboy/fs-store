@@ -46,5 +46,5 @@ export const getProducts = async (req, res) => {
     Product.estimatedDocumentCount(),
   ]);
 
-  res.status(200).json({ results: products, total, totalFiltered });
+  res.status(200).json({ results: products, total, totalFiltered, totalPages: Math.ceil(total / limit), pages: Math.ceil(totalFiltered / limit)});
 };

@@ -1,4 +1,5 @@
 import z from "zod";
+import { COMPANIES } from "./model.js";
 
 export const ProductsQuerySchema = z.object({
   query: z
@@ -6,15 +7,15 @@ export const ProductsQuerySchema = z.object({
       name: z.string(),
       price: z.number(),
       featured: z.coerce.boolean(),
-      company: z.string(),
+      company: z.enum(COMPANIES),
       createdAt: z.date(),
       page: z.coerce.number().min(1),
-      limit: z.coerce.number().min(1)
+      limit: z.coerce.number().min(1),
+      price: z.string(),
+      rating: z.string()
       // fields with additional logic below:
       // fields
       // sort
-      // price
-      // rating
     })
     .partial()
     .strict(),
@@ -82,10 +83,11 @@ const createNumericFieldSchema = (fieldName) => {
         if (!value) {
           return true;
         }
+        const decodedValue = decodeURIComponent(value);
         const valueRegex = new RegExp(
-          `^(${numericOperatorsStingUnion})\\d+\(,(${numericOperatorsStingUnion})\\d+)*$`
+          `^(${numericOperatorsStingUnion})\\d+(\\.\\d+)?(,(${numericOperatorsStingUnion})\\d+(\\.\\d+)?)*$`
         );
-        return valueRegex.test(value);
+        return valueRegex.test(decodedValue);
       },
       {
         message: `Invalid ${fieldName} range provided. Expected format: <100,>100,=100,<=100,>=100`,
@@ -95,8 +97,9 @@ const createNumericFieldSchema = (fieldName) => {
       if (!value) {
         return undefined;
       }
-      
-      const filters = value.split(",").reduce((acc, filter) => {
+
+      const decodedValue = decodeURIComponent(value);
+      const filters = decodedValue.split(",").reduce((acc, filter) => {
         const operator = filter.match(/[^0-9]+/g)[0];
         const value = parseInt(filter.match(/[0-9]+/g)[0]);
         const operatorIndex = numericOperators.indexOf(operator);

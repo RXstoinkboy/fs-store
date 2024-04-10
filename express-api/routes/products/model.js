@@ -30,5 +30,6 @@ const ProductSchema = new mongoose.Schema({
   }
 });
 
+export const COMPANIES = ["ikea", "woodika", "mebelki", "marcos"];
 export const Product = mongoose.model("Product", ProductSchema);
 
