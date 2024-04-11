@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "./model.js";
 import { CustomApiError } from "../../errors/custom-api-error.js";
+import { BlacklistedToken } from "./model.js";
 
 const createJWT = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -58,9 +59,17 @@ export const signIn = async (req, res, next) => {
   }
 };
 
-export const signOut = (req, res, next) => {
+export const signOut = async (req, res, next) => {
+  try {
+    const [_, token] = req.headers.authorization.split(" "); // Assumes 'Bearer <token>' format
+    
+    // Add the token to the blacklist
+    await new BlacklistedToken({ token }).save();
 
-  res.status(200).json({
-    message: "Sign out",
-  });
+    res.status(200).json({
+      message: "Sign out successful",
+    });
+  } catch (error) {
+    next(error);
+  }
 };

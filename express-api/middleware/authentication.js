@@ -1,7 +1,8 @@
 import { CustomApiError } from "../errors/custom-api-error.js";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
+import { BlacklistedToken } from "../routes/auth/model.js";
 
-export const authentication = (req, res, next) => {
+export const authentication = async (req, res, next) => {
   if (!req.headers.authorization) {
     throw new CustomApiError("Unauthorized", 401);
   }
@@ -12,12 +13,19 @@ export const authentication = (req, res, next) => {
     throw new CustomApiError("Unauthorized", 401);
   }
 
+  // this should better be stored in Redis or some other in-memory store
+  const isBlacklisted = await BlacklistedToken.exists({ token });
+
+  if (isBlacklisted) {
+    throw new CustomApiError("Unauthorized", 401);
+  }
+
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       throw new CustomApiError("Unauthorized", 401);
     }
     req.user = decoded;
-  })
+  });
 
   next();
 };

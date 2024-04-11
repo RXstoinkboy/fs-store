@@ -3,6 +3,7 @@ import { CustomApiError } from "../../errors/custom-api-error.js";
 
 export const getProfile = async (req, res, next) => {
   try {
+    
     const profile = await Profile.findOne({ user: req.user.userId }).populate(
       "user",
       "email"
