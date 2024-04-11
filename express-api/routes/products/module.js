@@ -5,6 +5,6 @@ import { ProductsQuerySchema } from './schemas.js';
 
 const router = express.Router();
 
-router.route('/').get([requestValidation(ProductsQuerySchema), controller.getProducts]);
+router.route('/').get(requestValidation(ProductsQuerySchema), controller.getProducts);
 
 export default router
