@@ -8,6 +8,6 @@ const router = express.Router();
 
 router.route("/sign-up").post(requestValidation(AuthSchema), controller.signUp)
 router.route("/sign-in").post(requestValidation(AuthSchema), controller.signIn)
-router.route("/sign-out").post(authentication, controller.signOut)
+router.route("/sign-out").post(authentication(), controller.signOut)
 
 export default router

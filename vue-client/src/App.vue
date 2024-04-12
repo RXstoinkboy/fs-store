@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/authStore'
 const authStore = useAuthStore()
 
 onMounted(() => {
-  authStore.retrieveToken()
+  authStore.retrieveAuthData();
 })
 </script>
 

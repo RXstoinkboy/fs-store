@@ -11,8 +11,7 @@
               >Products</v-btn
             ></router-link
           >
-          <!-- v-if="authStore.isAuthenticated" -->
-          <router-link :to="{ name: 'profile' }"
+          <router-link v-if="authStore.isAuthenticated" :to="{ name: 'profile' }"
             ><v-btn :active="activeRoute === 'profile'" class="text-blue"
               >Profile</v-btn
             ></router-link

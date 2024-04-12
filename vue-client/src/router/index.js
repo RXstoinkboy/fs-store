@@ -38,30 +38,46 @@ const router = createRouter({
       }
     },
     {
-      path: '/profile',
+      path: '/profiles/me',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
       meta: {
         layout: LayoutWithNavigation,
-        requiresAuth: true
+        requiredRole: 'user'
+      }
+    },
+    {
+      path: '/profiles',
+      name: 'profiles-list',
+      component: () => import('../views/ProfilesListView.vue'),
+      meta: {
+        layout: LayoutWithNavigation,
+        requiredRole: 'admin'
       }
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  const store = useAuthStore()
+  const authStore = useAuthStore()
 
-  if (to.meta.requiresAuth && !store.isAuthenticated) {
+  if (to.meta.requiredRole && !authStore.isAuthenticated) {
     next({
       name: 'sign-in',
       query: {
         redirect: to.fullPath
       }
     })
-  } else {
-    next()
+    return
   }
+
+  if (to.meta.requiredRole && !authStore.hasRole(to.meta.requiredRole) && !authStore.hasRole('admin')) {
+    next({ name: 'home' })
+    return true;
+  }
+
+  next();
+  return false;
 })
 
 export default router

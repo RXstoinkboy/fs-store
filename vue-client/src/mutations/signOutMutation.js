@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/vue-query'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 
-const signOut = (token) =>
+const signOut = ({token}) =>
   fetch('api/auth/sign-out', {
     method: 'POST',
     headers: {
@@ -17,7 +17,7 @@ export const useSignOutMutation = () => {
 
   return useMutation({
     mutationKey: 'signOut',
-    mutationFn: () => signOut(authStore.retrieveToken()),
+    mutationFn: () => signOut(authStore.retrieveAuthData()),
     onSuccess: () => {
       router.push({ name: 'home' })
       authStore.signOut()

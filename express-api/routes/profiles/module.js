@@ -8,11 +8,13 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(requestValidation(ProfileSchema), authentication, controller.getProfile)
+  .get(authentication('admin'), controller.getProfile)
   .post(
     requestValidation(ProfileSchema),
-    authentication,
+    authentication('user'),
     controller.createProfile
   );
+
+router.route("/me").get(authentication(), controller.getProfile);
 
 export default router;

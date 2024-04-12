@@ -31,9 +31,10 @@ export const useSignInMutation = () => {
     mutationFn: ({ email, password }) => signIn({ email, password }),
     onSuccess: (res) => {
       authStore.isAuthenticated = true
-      authStore.saveToken(res.token)
+      authStore.userRole = res.role
+      authStore.saveAuthData(res.token, res.role)
 
-      const redirectPath = route.query.redirect || '/profile'
+      const redirectPath = route.query.redirect || { name: 'profile' }
       router.push(redirectPath)
     }
   })

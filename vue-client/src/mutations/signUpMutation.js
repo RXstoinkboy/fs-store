@@ -29,7 +29,8 @@ export const useSignUpMutation = () => {
     mutationFn: ({ email, password }) => signUp({ email, password }),
     onSuccess: (res) => {
       authStore.isAuthenticated = true
-      authStore.saveToken(res.token)
+      authStore.userRole = res.role
+      authStore.saveAuthData(res.token, res.role)
 
       router.push({ name: 'profile' })
     }

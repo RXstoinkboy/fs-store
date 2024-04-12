@@ -4,8 +4,8 @@ import { User } from "./model.js";
 import { CustomApiError } from "../../errors/custom-api-error.js";
 import { BlacklistedToken } from "./model.js";
 
-const createJWT = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+const createJWT = (userId, role = "user") => {
+  return jwt.sign({ userId, role }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
 };
@@ -21,11 +21,12 @@ export const signUp = async (req, res, next) => {
     const createdUser = await User.create({
       email: req.body.email,
       password: hashedPassword,
+      role: req.body.role,
     });
 
-    const token = createJWT(createdUser._id);
+    const token = createJWT(createdUser._id, createdUser.role);
 
-    res.status(201).json({ message: "Success", token });
+    res.status(201).json({ message: "Success", token, role: createdUser.role });
   } catch (error) {
     next(error);
   }
@@ -48,11 +49,12 @@ export const signIn = async (req, res, next) => {
       throw new CustomApiError("Invalid credentials", 401);
     }
 
-    const token = createJWT(user._id);
+    const token = createJWT(user._id, user.role);
 
     res.status(200).json({
       message: "Success",
       token,
+      role: user.role
     });
   } catch (error) {
     next(error);
@@ -62,7 +64,7 @@ export const signIn = async (req, res, next) => {
 export const signOut = async (req, res, next) => {
   try {
     const [_, token] = req.headers.authorization.split(" "); // Assumes 'Bearer <token>' format
-    
+
     // Add the token to the blacklist
     await new BlacklistedToken({ token }).save();
 
