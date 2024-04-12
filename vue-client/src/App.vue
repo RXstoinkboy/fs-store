@@ -8,7 +8,11 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
   <v-app>
     <div class="root-wrapper">
       <component :is="$route.meta.layout || 'div'">
-        <RouterView />
+        <RouterView v-slot="{Component}">
+          <transition name='fade'>
+              <component :is="Component" />
+          </transition>
+        </RouterView>
       </component>
     </div>
     <VueQueryDevtools />
@@ -20,5 +24,16 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
   display: flex;
   height: 100svh;
   height: 100vh;
+}
+
+/* root level transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
