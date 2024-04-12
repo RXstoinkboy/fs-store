@@ -1,16 +1,23 @@
 <script setup>
+import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
+import { useAuthStore } from '@/stores/authStore'
 
+const authStore = useAuthStore()
+
+onMounted(() => {
+  authStore.retrieveToken()
+})
 </script>
 
 <template>
   <v-app>
     <div class="root-wrapper">
       <component :is="$route.meta.layout || 'div'">
-        <RouterView v-slot="{Component}">
-          <transition name='fade'>
-              <component :is="Component" />
+        <RouterView v-slot="{ Component }">
+          <transition name="fade">
+            <component :is="Component" />
           </transition>
         </RouterView>
       </component>
