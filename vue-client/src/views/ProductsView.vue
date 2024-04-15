@@ -13,9 +13,9 @@
         <v-col cols="4"><ProductFilters /></v-col>
         <v-col cols="8" class="d-flex flex-column ga-4">
           <ProductsSort />
-          <v-container v-if="products" class="px-0 py-0">
+          <v-container class="px-0 py-0">
             <v-row fluid wrap>
-              <v-col cols="6" v-for="product in products.results" :key="product.id">
+              <v-col cols="6" v-for="product in products?.results" :key="product?.id">
                 <ProductCard :product="product" />
               </v-col>
             </v-row>

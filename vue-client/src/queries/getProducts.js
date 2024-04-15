@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/vue-query'
 import { useRoute } from 'vue-router'
-import { watchEffect, computed } from 'vue'
+import { computed } from 'vue'
 
 const fetchAllProducts = (query) => {
   const queryParams = new URLSearchParams(query).toString()
@@ -11,18 +11,9 @@ export const useGetProducts = () => {
   const route = useRoute()
   const queryKey = computed(() => ['products', JSON.stringify(route.query)])
 
-  const { refetch, ...query } = useQuery({
+  return useQuery({
     queryKey,
-    queryFn: () => fetchAllProducts(route.query)
+    queryFn: () => fetchAllProducts(route.query),
+    initial: []
   })
-
-  watchEffect(
-    () => {
-        console.log(route.query)
-      refetch()
-    },
-    { flush: 'post' }
-  )
-
-  return query
 }

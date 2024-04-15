@@ -1,3 +1,18 @@
+<template>
+  <v-app>
+    <div class="root-wrapper">
+      <component :is="$route.meta.layout || 'div'">
+        <RouterView v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </RouterView>
+      </component>
+    </div>
+    <VueQueryDevtools />
+  </v-app>
+</template>
+
 <script setup>
 import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
@@ -11,21 +26,6 @@ onMounted(() => {
 })
 </script>
 
-<template>
-  <v-app>
-    <div class="root-wrapper">
-      <component :is="$route.meta.layout || 'div'">
-        <RouterView v-slot="{ Component }">
-          <transition name="fade">
-            <component :is="Component" />
-          </transition>
-        </RouterView>
-      </component>
-    </div>
-    <VueQueryDevtools />
-  </v-app>
-</template>
-
 <style scoped>
 .root-wrapper {
   display: flex;
@@ -36,7 +36,7 @@ onMounted(() => {
 /* root level transition */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .fade-enter-from,
