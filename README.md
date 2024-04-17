@@ -28,6 +28,6 @@ The Vue client of fs-store is built with the following technologies:
 
 - **Vuetify**: The client is styled using Vuetify, a popular Vue UI framework that provides a set of pre-designed components.
 
-- **Authentication Flow (In Progress)**: The client is currently implementing an authentication flow, which will allow users to log in and access their profile information. Only authenticated users will be able to view this information.
+- **Authentication Flow**: The client is currently implementing an authentication flow, which will allow users to log in and access their profile information. Only authenticated users will be able to view this information.
 
 Please refer to the respective documentation and source code for more detailed information on the implementation of the Express API and Vue client.
